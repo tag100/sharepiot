@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.1-apache  # Changed from 7.4 to 8.1
 
 # Install curl and dependencies
 RUN apt-get update && apt-get install -y \
@@ -19,7 +19,7 @@ RUN chown -R www-data:www-data /var/www/html
 # Create health check file
 RUN echo "OK" > /var/www/html/health.php
 
-# Runtime configuration
+# Runtime configuration (same as before)
 CMD ["/bin/bash", "-c", "\
     echo '=== FIXING APACHE MPM CONFIGURATION ===' && \
     echo 'Disabling conflicting MPM modules...' && \
@@ -35,5 +35,5 @@ CMD ["/bin/bash", "-c", "\
     echo 'Testing Apache configuration...' && \
     apache2ctl -t && \
     echo '=== STARTING APACHE ===' && \
-    exec apache2-foreground \
+    exec apache2-forever \
 "]
